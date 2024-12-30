@@ -7,3 +7,4 @@ python-dotenv
 passlib
 python-jose
 passlib[bcrypt]
+psycopg2-binary
