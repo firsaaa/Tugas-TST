@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, DateTime, Date
+from sqlalchemy.sql import func
 from app.database import Base
 
 class Reservation(Base):
@@ -8,11 +9,12 @@ class Reservation(Base):
     user_name = Column(String, nullable=False)
     seat_number = Column(String, nullable=False)
     reservation_date = Column(Date, nullable=False)
-
+    created_at = Column(DateTime, default=func.now(), nullable=False)
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    password = Column(String)  # Disimpan dalam bentuk hashed
+    username = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)

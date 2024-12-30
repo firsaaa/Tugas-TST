@@ -7,22 +7,21 @@ import os
 # Load environment variables
 load_dotenv()
 
-DATABASE_URL = os.getenv('DATABASE_URL')
-
+DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set. Check your .env file.")
 
+# Create engine with SSL enabled
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True, 
-    connect_args={"sslmode": "require"}  
+    connect_args={"sslmode": "require"}  # Important for Supabase
 )
 
-# Session dan Base untuk ORM
+# Session and Base for ORM
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Dependency untuk mendapatkan session database
+# Dependency for database session
 def get_db():
     db = SessionLocal()
     try:
