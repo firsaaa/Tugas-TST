@@ -3,6 +3,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info(f"Connecting to database: {os.getenv('DATABASE_URL')}")
+
+engine = create_engine(
+    os.getenv("DATABASE_URL"),
+    connect_args={"sslmode": "require"}
+)
+
 
 # Load environment variables
 load_dotenv()
