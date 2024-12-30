@@ -14,6 +14,7 @@ logging.info(f"Connecting to database: {os.getenv('DATABASE_URL')}")
 
 engine = create_engine(
     os.getenv("DATABASE_URL"),
+    connect_args={"sslmode": "require"}  
 )
 
 DATABASE_URL = os.getenv("DATABASE_URL")
