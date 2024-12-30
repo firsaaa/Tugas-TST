@@ -1,13 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
-from app.routes import public, secure  # Pastikan ini di-load setelah Base didefinisikan
-from app import models  # Impor models agar terdaftar di SQLAlchemy
-
-# Buat tabel di database
-Base.metadata.create_all(bind=engine)
+from app.routes import public, secure
+from app.database import Base, engine
+import os
 
 app = FastAPI()
+
+# Handle database creation
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Database initialization error: {e}")
 
 # Add CORS middleware
 app.add_middleware(

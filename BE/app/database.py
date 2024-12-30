@@ -5,27 +5,22 @@ from dotenv import load_dotenv
 import os
 import logging
 
-# Load environment variables
-load_dotenv()
-
-
-logging.basicConfig(level=logging.INFO)
-logging.info(f"Connecting to database: {os.getenv('DATABASE_URL')}")
-
-engine = create_engine(
-    os.getenv("DATABASE_URL"),
-    connect_args={"sslmode": "require"}  
-)
+# Load .env file explicitly
+load_dotenv(dotenv_path=".env")
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set. Check your .env file.")
+    raise ValueError("DATABASE_URL environment variable is not set")
 
-# Session and Base for ORM
+logging.info(f"Connecting to database: {DATABASE_URL}")
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"sslmode": "require"}
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Dependency for database session
 def get_db():
     db = SessionLocal()
     try:
