@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
 import logging
+import urllib.parse
 
 # Load .env file explicitly
 load_dotenv(dotenv_path=".env")

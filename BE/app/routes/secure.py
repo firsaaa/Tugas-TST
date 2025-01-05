@@ -147,7 +147,11 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 # Create Reservation
 
 @router.post("/reservations", response_model=ReservationResponse)
-def create_reservation(reservation: ReservationCreate, db: Session = Depends(get_db)):
+def create_reservation(
+    reservation: ReservationCreate, 
+    db: Session = Depends(get_db),
+    key: str = Depends(api_key_auth) 
+):
     db_reservation = Reservation(
         user_name=reservation.user_name,
         seat_number=reservation.seat_number,
