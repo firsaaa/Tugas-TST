@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import os
-from app.models import Reservation, User
+from app.models import Reservation, User, Seat
 from app.database import get_db
 from app.schemas import ReservationCreate, ReservationResponse
 
@@ -185,6 +185,11 @@ def get_reservations(
 
     reservations = query.all()
     return reservations
+    
+@router.get("/seats")
+def get_seats(db: Session = Depends(get_db)):
+    seats = db.query(Seat).all()
+    return [{"id": seat.id, "seat_number": seat.seat_number} for seat in seats]
 
 # Check Seat Availability - Fixed endpoint
 @router.get("/reservations/check-availability", summary="Check seat availability")

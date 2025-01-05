@@ -18,3 +18,9 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
+
+class Seat(Base):
+    __tablename__ = "seats"
+
+    id = Column(Integer, primary_key=True, index=True)
+    seat_number = Column(String, unique=True, nullable=False)
