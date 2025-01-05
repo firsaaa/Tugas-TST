@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 import os
 from app.models import Reservation, User
 from app.database import get_db
+from app.schemas import ReservationCreate, ReservationResponse
 
 # Router
 router = APIRouter()
@@ -61,10 +62,15 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class ReservationCreate(BaseModel):
+class ReservationResponse(BaseModel):
+    id: int
     user_name: str
     seat_number: str
     reservation_date: date
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
 
 class LoginRequest(BaseModel):
     username: str
@@ -139,6 +145,19 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     return {"message": "User deleted successfully"}
 
 # Create Reservation
+
+@router.post("/reservations", response_model=ReservationResponse)
+def create_reservation(reservation: ReservationCreate, db: Session = Depends(get_db)):
+    db_reservation = Reservation(
+        user_name=reservation.user_name,
+        seat_number=reservation.seat_number,
+        reservation_date=reservation.reservation_date,
+    )
+    db.add(db_reservation)
+    db.commit()
+    db.refresh(db_reservation)
+    return db_reservation
+
 @router.get("/reservations", summary="Get all reservations with optional filters")
 def get_reservations(
     user_name: str = None,
