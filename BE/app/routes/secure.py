@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Header, Query
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import date, datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -58,6 +58,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 # Models
 class UserCreate(BaseModel):
     username: str
+    email: EmailStr
     password: str
 
 class ReservationCreate(BaseModel):
