@@ -32,3 +32,5 @@ def read_root():
 # Tambahkan route lainnya
 app.include_router(public.router, prefix="/api/public", tags=["Public"])
 app.include_router(secure.router, prefix="/api/secure", tags=["Secure"])
+app.include_router(public.router)
+
