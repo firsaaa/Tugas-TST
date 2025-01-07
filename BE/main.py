@@ -18,7 +18,10 @@ except Exception as e:
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Ganti dengan URL frontend Anda di production
+    allow_origins=[
+        "http://127.0.0.1:5500",  
+        "https://coworkingspace-backend.vercel.app"  
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
