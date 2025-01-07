@@ -19,7 +19,6 @@ class User(BaseModel):
         from_attributes = True
 
 class ReservationCreate(BaseModel):
-    user_name: str
     seat_number: str
     reservation_date: date
 
