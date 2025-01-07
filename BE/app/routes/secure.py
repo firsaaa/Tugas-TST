@@ -150,8 +150,21 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 def create_reservation(
     reservation: ReservationCreate, 
     db: Session = Depends(get_db),
-    key: str = Depends(api_key_auth) 
+    key: str = Depends(api_key_auth)
 ):
+    # Check if a reservation already exists for the given seat and date
+    existing_reservation = db.query(Reservation).filter(
+        Reservation.seat_number == reservation.seat_number,
+        Reservation.reservation_date == reservation.reservation_date
+    ).first()
+
+    if existing_reservation:
+        raise HTTPException(
+            status_code=400,
+            detail="This seat is already reserved for the selected date."
+        )
+
+    # Create a new reservation if no conflicts exist
     db_reservation = Reservation(
         user_name=reservation.user_name,
         seat_number=reservation.seat_number,
@@ -161,6 +174,7 @@ def create_reservation(
     db.commit()
     db.refresh(db_reservation)
     return db_reservation
+
 
 @router.get("/reservations", summary="Get all reservations with optional filters")
 def get_reservations(
