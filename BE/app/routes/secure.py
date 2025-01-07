@@ -202,6 +202,18 @@ def get_reservations(
 
     reservations = query.all()
     return reservations
+
+@router.get("/verify-token", summary="Verify token")
+def verify_token(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return {"username": username, "valid": True}
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
     
 @router.get("/seats")
 def get_seats(db: Session = Depends(get_db)):
