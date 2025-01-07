@@ -182,12 +182,15 @@ def get_reservations(
     seat_number: str = None,
     reservation_date: str = None,
     db: Session = Depends(get_db),
-    key: str = Depends(api_key_auth),
+    current_user: str = Depends(get_current_user),
 ):
     query = db.query(Reservation)
 
-    if user_name:
+    if not user_name:
+        query = query.filter(Reservation.user_name == current_user)
+    else: 
         query = query.filter(Reservation.user_name == user_name)
+    
     if seat_number:
         query = query.filter(Reservation.seat_number == seat_number)
     if reservation_date:
