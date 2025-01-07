@@ -221,7 +221,7 @@ def get_seats(db: Session = Depends(get_db)):
     return [{"id": seat.id, "seat_number": seat.seat_number} for seat in seats]
 
 # Check Seat Availability - Fixed endpoint
-@router.get("/reservations/check-availability", summary="Check seat availability")
+@router.get("/reservations/check-availability")
 def check_seat_availability(
     seat_number: str = Query(..., description="Seat number to check"),
     reservation_date: str = Query(..., description="Reservation date in YYYY-MM-DD format"),
@@ -231,10 +231,7 @@ def check_seat_availability(
     try:
         parsed_date = datetime.strptime(reservation_date, "%Y-%m-%d").date()
     except ValueError:
-        raise HTTPException(
-            status_code=422, 
-            detail="Invalid date format. Use YYYY-MM-DD format"
-        )
+        raise HTTPException(status_code=422, detail="Invalid date format. Use YYYY-MM-DD")
     
     reservation = db.query(Reservation).filter(
         Reservation.seat_number == seat_number,
@@ -243,9 +240,9 @@ def check_seat_availability(
 
     return {
         "available": not bool(reservation),
-        "message": "Seat is available" if not reservation else "Seat is already reserved on this date"
+        "message": "Seat is available" if not reservation else "Seat is already reserved"
     }
-
+    
 # Get Reservation by ID
 @router.get("/reservations/{reservation_id}", summary="Get a reservation by ID")
 def get_reservation(
