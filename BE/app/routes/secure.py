@@ -150,9 +150,9 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.post("/reservations", response_model=ReservationResponse)
 def create_reservation(
-    reservation: ReservationCreate, 
+    reservation: ReservationCreate,
     db: Session = Depends(get_db),
-    key: str = Depends(api_key_auth)
+    current_user: str = Depends(get_current_user)  # Get user from token
 ):
     # Check if a reservation already exists for the given seat and date
     existing_reservation = db.query(Reservation).filter(
@@ -168,7 +168,7 @@ def create_reservation(
 
     # Create a new reservation if no conflicts exist
     db_reservation = Reservation(
-        user_name=reservation.user_name,
+        user_name=current_user,  # Get the username from the token
         seat_number=reservation.seat_number,
         reservation_date=reservation.reservation_date,
     )
