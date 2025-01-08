@@ -242,7 +242,7 @@ def check_seat_availability(
         "available": not bool(reservation),
         "message": "Seat is available" if not reservation else "Seat is already reserved"
     }
-    
+
 # Get Reservation by ID
 @router.get("/reservations/{reservation_id}", summary="Get a reservation by ID")
 def get_reservation(
@@ -272,3 +272,22 @@ def cancel_reservation(
     db.delete(reservation)
     db.commit()
     return {"message": "Reservation cancelled successfully"}
+
+
+@router.get("/proxy/check-availability", summary="Proxy endpoint for availability")
+def proxy_check_availability(
+    seat_number: str,
+    reservation_date: str,
+    db: Session = Depends(get_db),
+):
+    api_url = f"https://coworkingspace-backend.vercel.app/api/secure/reservations/check-availability?seat_number={seat_number}&reservation_date={reservation_date}"
+    headers = {
+        "x-api-key": os.getenv("API_KEY"),  # Ambil API key dari environment
+        "Authorization": "Bearer <token>",  # Ganti jika autentikasi token diperlukan
+    }
+
+    response = requests.get(api_url, headers=headers)
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.json())
+    return response.json()
+
