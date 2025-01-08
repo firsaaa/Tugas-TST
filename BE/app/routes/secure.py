@@ -9,6 +9,7 @@ import os
 from app.models import Reservation, User, Seat
 from app.database import get_db
 from app.schemas import ReservationCreate, ReservationResponse
+import requests
 
 # Router
 router = APIRouter()
@@ -273,21 +274,21 @@ def cancel_reservation(
     db.commit()
     return {"message": "Reservation cancelled successfully"}
 
-
-@router.get("/proxy/check-availability", summary="Proxy endpoint for availability")
+@router.get("/proxy/check-availability", summary="Proxy for Check Availability")
 def proxy_check_availability(
-    seat_number: str,
-    reservation_date: str,
-    db: Session = Depends(get_db),
+    seat_number: str = Query(..., description="Seat number"),
+    reservation_date: str = Query(..., description="Reservation date (YYYY-MM-DD)"),
 ):
     api_url = f"https://coworkingspace-backend.vercel.app/api/secure/reservations/check-availability?seat_number={seat_number}&reservation_date={reservation_date}"
+    
     headers = {
-        "x-api-key": os.getenv("API_KEY"),  # Ambil API key dari environment
-        "Authorization": "Bearer <token>",  # Ganti jika autentikasi token diperlukan
+        "x-api-key": os.getenv("API_KEY"),  # Pastikan API_KEY ada di environment
     }
 
-    response = requests.get(api_url, headers=headers)
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail=response.json())
-    return response.json()
-
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()  # Raise HTTPError jika status bukan 200
+    except requests.RequestException as e:
+        raise HTTPException(status_code=response.status_code, detail=str(e))
+    
+    return JSONResponse(content=response.json())
