@@ -308,7 +308,7 @@ def proxy_check_availability(
     seat_number: str = Query(..., description="Seat number"),
     reservation_date: str = Query(..., description="Reservation date (YYYY-MM-DD)"),
 ):
-    api_url = f"https://coworkingspace-backend.vercel.app/api/secure/reservations/check-availability?seat_number={seat_number}&reservation_date={reservation_date}"
+    api_url = f"https://coworkingspace.up.railway.app/api/secure/reservations/check-availability?seat_number={seat_number}&reservation_date={reservation_date}"
     
     headers = {
         "x-api-key": os.getenv("API_KEY"),  # Pastikan API_KEY ada di environment
