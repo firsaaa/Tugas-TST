@@ -82,15 +82,33 @@ class LoginRequest(BaseModel):
 # Endpoints
 
 #firebase
-@router.post("/api/secure/firebase-login")
-async def firebase_login(data: dict):
+import requests
+from fastapi import APIRouter, HTTPException, Query
+from starlette.responses import JSONResponse
+
+router = APIRouter()
+
+@router.post("/proxy/firebase-login", summary="Proxy for Firebase Login")
+async def proxy_firebase_login(token: str = Query(..., description="Firebase Token")):
+    """
+    Proxy Firebase login to verify token and retrieve user info.
+    """
+    firebase_url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={firebase_api_key}"
+
+    headers = {"Content-Type": "application/json"}
+    payload = {"idToken": token}
+
     try:
-        decoded_token = auth.verify_id_token(data["token"])
-        email = decoded_token["email"]
-        # Handle user authentication and saving logic here
-        return {"message": "User authenticated"}
-    except Exception as e:
-        raise HTTPException(status_code=401, detail=f"Authentication failed: {e}")
+        response = requests.post(firebase_url, headers=headers, json=payload)
+        response.raise_for_status()
+
+        # Successful login
+        firebase_data = response.json()
+        return JSONResponse(content={"firebase_data": firebase_data})
+
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=400, detail=f"Firebase login failed: {str(e)}")
+
 
 
 # Register User

@@ -8,6 +8,7 @@ import os
 load_dotenv()
 
 app = FastAPI()
+firebase_api_key = os.getenv("FIREBASE_API_KEY")
 
 # Handle database creation
 try:
