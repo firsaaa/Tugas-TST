@@ -80,6 +80,18 @@ class LoginRequest(BaseModel):
 
 # Endpoints
 
+#firebase
+@router.post("/api/secure/firebase-login")
+async def firebase_login(data: dict):
+    try:
+        decoded_token = auth.verify_id_token(data["token"])
+        email = decoded_token["email"]
+        # Handle user authentication and saving logic here
+        return {"message": "User authenticated"}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Authentication failed: {e}")
+
+
 # Register User
 @router.post("/register", summary="Register a new user")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
