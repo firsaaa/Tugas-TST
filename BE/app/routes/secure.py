@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 import os
 from app.models import Reservation, User, Seat
 from app.database import get_db
-from app.schemas import ReservationCreate, ReservationResponse
+from app.schemas import ReservationCreate, ReservationResponse, MediMatch
 import requests
 from fastapi.responses import JSONResponse
 from firebase_admin import auth
@@ -321,3 +321,21 @@ def proxy_check_availability(
         raise HTTPException(status_code=response.status_code, detail=str(e))
     
     return JSONResponse(content=response.json())
+
+
+#Integrasi dengan MediMatch
+MEDIMATCH_URL = "https://backend.medimatch.web.id/recommend"
+@router.post("/recommend-drugs", summary="Recommend Drugs from Friend's API")
+def recommend_drugs(request: MediMatch):
+    payload = {
+        "drug_name": request.drug_name,
+        "top_n": request.top_n
+    }
+    try:
+        response = requests.post(MEDIMATCH_URL, json=payload)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+    except requests.RequestException as exc:
+        raise HTTPException(status_code=500, detail=f"Error contacting friend API: {exc}")
