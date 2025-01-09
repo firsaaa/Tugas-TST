@@ -234,7 +234,7 @@
             }
             try {
                 const response = await fetch(
-                    "https://coworkingspace-backend.vercel.app/api/secure/verify-token",
+                    "https://coworkingspace.up.railway.app/api/secure/verify-token",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -287,7 +287,7 @@
 
             try {
                 const response = await fetch(
-                    `https://coworkingspace-backend.vercel.app/api/secure/proxy/check-availability?seat_number=${seatNumber}&reservation_date=${reservationDate}`,
+                    `https://coworkingspace.up.railway.app/api/secure/proxy/check-availability?seat_number=${seatNumber}&reservation_date=${reservationDate}`,
                     {
                         method: 'GET',
                         headers: {
@@ -346,7 +346,7 @@
 
                 const formattedDate = new Date(reservationDate).toISOString().split('T')[0];
 
-                const response = await fetch('https://coworkingspace-backend.vercel.app/api/secure/reservations', {
+                const response = await fetch('https://coworkingspace.up.railway.app/api/secure/reservations', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -388,7 +388,7 @@
 
             try {
                 const response = await fetch(
-                    "https://coworkingspace-backend.vercel.app/api/secure/reservations",
+                    "https://coworkingspace.up.railway.app/api/secure/reservations",
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -451,7 +451,7 @@
             if (!token) return false;
 
             try {
-                const response = await fetch('https://coworkingspace-backend.vercel.app/api/secure/verify-token', {
+                const response = await fetch('https://coworkingspace.up.railway.app/api/secure/verify-token', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -467,7 +467,7 @@
             const reservationDate = document.getElementById("reservation_date").value;
 
             const response = await fetch(
-                "https://coworkingspace-backend.vercel.app/api/secure/reservations",
+                "https://coworkingspace.up.railway.app/api/secure/reservations",
                 {
                     method: "POST",
                     headers: {
@@ -535,7 +535,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`https://coworkingspace-backend.vercel.app/api/secure/reservations/${reservationId}`, {
+                const response = await fetch(`https://coworkingspace.up.railway.app/api/secure/reservations/${reservationId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
