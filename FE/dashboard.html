@@ -90,6 +90,55 @@
             font-size: 16px;
         }
 
+        .form-section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9; /* Subtle background color for contrast */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .form-section h2 {
+            margin-bottom: 30px; /* Add more space below the header */
+            font-size: 24px;
+            text-align: center; /* Center-align the heading */
+            color: #000000;
+        }
+
+        .form-section label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block; /* Ensure the label is on a separate line */
+        }
+
+        .form-section select,
+        .form-section input[type="text"],
+        .form-section input[type="date"] {
+            width: 100%; /* Full width for inputs */
+            padding: 10px;
+            margin-bottom: 20px; /* Space between inputs */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-section button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #001f3f; /* Navy blue color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-section button:hover {
+            background-color: #0056b3; /* Slightly lighter blue on hover */
+        }
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -210,7 +259,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="#" class="logo">Pica's Coworking & MediMatch</a>
+        <a href="#" class="logo">Pica's Coworking Space</a>
         <div class="nav-links">
             <span id="welcomeUser">Welcome</span>
             <a href="#" onclick="handleLogout()">Logout</a>
@@ -230,10 +279,10 @@
 
         <!-- Workspace Section -->
         <div id="workspace-section" class="section-content active">
-            <div class="section-container">
+            <div class="form-section">
                 <h2>Reserve Your Workspace</h2>
                 <p>Find and book your ideal workspace for focused productivity</p>
-                <form class="reservation-form" id="reservationForm">
+                <form id="reservationForm">
                     <div class="form-group">
                         <label for="seatNumber">Seat Number</label>
                         <select id="seatNumber" required>
@@ -255,11 +304,11 @@
         </div>
 
         <!-- Medicine Section -->
-        <div id="medicine-section" class="section-content">
-            <div class="section-container">
+        <div id="medicine-section" class="section-content active">
+            <div class="form-section">
                 <h2>Find Medicine Alternatives</h2>
                 <p>Get personalized recommendations for medicine alternatives</p>
-                <form class="medicine-form" id="medicineForm">
+                <form id="medicineForm">
                     <div class="form-group">
                         <label for="drugName">Medicine Name</label>
                         <input 
