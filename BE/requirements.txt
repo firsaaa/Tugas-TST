@@ -9,4 +9,4 @@ python-jose
 passlib[bcrypt]
 psycopg2-binary
 requests
-firebase-admin==1.69.0
+firebase-admin==6.6.0

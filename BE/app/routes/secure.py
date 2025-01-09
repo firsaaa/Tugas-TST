@@ -90,10 +90,7 @@ router = APIRouter()
 
 @router.post("/proxy/firebase-login", summary="Proxy for Firebase Login")
 async def proxy_firebase_login(token: str = Query(..., description="Firebase Token")):
-    """
-    Proxy Firebase login to verify token and retrieve user info.
-    """
-    firebase_url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={firebase_api_key}"
+    firebase_url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={os.getenv('FIREBASE_API_KEY')}"
 
     headers = {"Content-Type": "application/json"}
     payload = {"idToken": token}
@@ -102,12 +99,12 @@ async def proxy_firebase_login(token: str = Query(..., description="Firebase Tok
         response = requests.post(firebase_url, headers=headers, json=payload)
         response.raise_for_status()
 
-        # Successful login
         firebase_data = response.json()
         return JSONResponse(content={"firebase_data": firebase_data})
 
-    except requests.exceptions.RequestException as e:
+    except requests.RequestException as e:
         raise HTTPException(status_code=400, detail=f"Firebase login failed: {str(e)}")
+
 
 
 
