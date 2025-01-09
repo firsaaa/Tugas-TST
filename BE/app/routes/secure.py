@@ -11,6 +11,7 @@ from app.database import get_db
 from app.schemas import ReservationCreate, ReservationResponse
 import requests
 from fastapi.responses import JSONResponse
+from firebase_admin import auth
 
 # Router
 router = APIRouter()
