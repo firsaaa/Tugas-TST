@@ -27,7 +27,7 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
 1. **Frontend**: https://www.picacoworkingspace.site
 2. **Backend**: https://www.api.picacoworkingspace.site
 3. **API DOCS**: https://www.api.picacoworkingspace.site/docs
-4. **Documents** : 
+4. **Documents** : https://s.hmif.dev/Laporan_TST
 
 
 ---
