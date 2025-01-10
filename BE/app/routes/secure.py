@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Header, Query
+from fastapi import APIRouter, Depends, HTTPException, Header, Query, Body, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
@@ -10,8 +10,7 @@ from app.models import Reservation, User, Seat
 from app.database import get_db
 from app.schemas import ReservationCreate, ReservationResponse, MediMatch
 import requests
-from fastapi.responses import JSONResponse
-from firebase_admin import auth
+from typing import List, Optional
 
 # Router
 router = APIRouter()
@@ -20,7 +19,7 @@ router = APIRouter()
 API_KEY = os.getenv("API_KEY")  # Ambil API Key dari .env
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback_secret_key")  # Secret Key untuk JWT
 ALGORITHM = "HS256"  # Algoritma yang digunakan untuk JWT
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # Durasi token
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Durasi token
 
 # OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -59,6 +58,50 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+
+class TokenRefresh(BaseModel):
+    refresh_token: str
+
+def create_refresh_token(user_id: str) -> str:
+    token = os.urandom(16).hex()  # Generate a random token
+    refresh_token_store[token] = user_id
+    return token
+
+# Refresh Token
+refresh_token_store = {}
+
+@router.post("/refresh-token", response_model=TokenResponse)
+async def refresh_token(
+    token_data: TokenRefresh,
+    x_api_key: Optional[str] = Header(None)
+):
+    # First check API key if provided
+    if x_api_key:
+        if x_api_key != API_KEY:
+            raise HTTPException(status_code=403, detail="Invalid API Key")
+    
+    # Verify refresh token
+    user_id = refresh_token_store.get(token_data.refresh_token)
+    if not user_id:
+        raise HTTPException(status_code=403, detail="Invalid refresh token")
+    
+    # Create new tokens
+    new_access_token = create_access_token(data={"sub": user_id})
+    new_refresh_token = create_refresh_token(user_id)
+    
+    # Remove old refresh token
+    refresh_token_store.pop(token_data.refresh_token, None)
+    
+    return TokenResponse(
+        access_token=new_access_token,
+        refresh_token=new_refresh_token
+    )
+
+
 # Models
 class UserCreate(BaseModel):
     username: str
@@ -88,26 +131,6 @@ from starlette.responses import JSONResponse
 
 router = APIRouter()
 
-@router.post("/proxy/firebase-login", summary="Proxy for Firebase Login")
-async def proxy_firebase_login(token: str = Query(..., description="Firebase Token")):
-    firebase_url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={os.getenv('FIREBASE_API_KEY')}"
-
-    headers = {"Content-Type": "application/json"}
-    payload = {"idToken": token}
-
-    try:
-        response = requests.post(firebase_url, headers=headers, json=payload)
-        response.raise_for_status()
-
-        firebase_data = response.json()
-        return JSONResponse(content={"firebase_data": firebase_data})
-
-    except requests.RequestException as e:
-        raise HTTPException(status_code=400, detail=f"Firebase login failed: {str(e)}")
-
-
-
-
 # Register User
 @router.post("/register", summary="Register a new user")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
@@ -130,7 +153,8 @@ def login_user(request: LoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     access_token = create_access_token(data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token(user.username)
+    return {"access_token": access_token, "refresh_token": refresh_token,"token_type": "bearer"}
 
 # Logout User
 @router.post("/logout", summary="Logout user")
@@ -322,20 +346,62 @@ def proxy_check_availability(
     
     return JSONResponse(content=response.json())
 
+@router.get("/my-reservations", response_model=List[ReservationResponse])
+async def get_my_reservations(user_id: str):
+    reservations = await ReservationModel.find({"user_id": user_id}).to_list()
+    current_date = datetime.now()
+
+    for reservation in reservations:
+        reservation_date = datetime.strptime(reservation["reservation_date"], "%Y-%m-%d")
+        if reservation_date < current_date:
+            reservation["status"] = "done"
+        else:
+            reservation["status"] = "active"
+
+    return JSONResponse(content={"data": reservations})
+
 
 #Integrasi dengan MediMatch
+MEDIMATCH_API_KEY = os.getenv("MEDIMATCH_API_KEY")
 MEDIMATCH_URL = "https://backend.medimatch.web.id/recommend"
+
 @router.post("/recommend-drugs", summary="Recommend Drugs from Friend's API")
-def recommend_drugs(request: MediMatch):
+async def recommend_drugs(
+    request: Request,
+    drug_name: str = Body(..., embed=True, description="Name of the drug to find alternatives for"),
+    top_n: int = Body(5, embed=True, description="Number of recommendations to retrieve")
+):
+    # Get the API key from headers using the correct header name
+    api_key = request.headers.get("api-key")
+    if not api_key:
+        raise HTTPException(status_code=403, detail="Missing API key")
+    
+    # Verify our API key
+    if api_key != MEDIMATCH_API_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    
     payload = {
-        "drug_name": request.drug_name,
-        "top_n": request.top_n
+        "drug_name": drug_name,
+        "top_n": top_n
     }
+    
+    # Use the correct header name for the MediMatch API
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json"
+    }
+    
     try:
-        response = requests.post(MEDIMATCH_URL, json=payload)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise HTTPException(status_code=response.status_code, detail=response.text)
+        response = requests.post(MEDIMATCH_URL, json=payload, headers=headers)
+
+        response.raise_for_status()
+        return response.json()
     except requests.RequestException as exc:
-        raise HTTPException(status_code=500, detail=f"Error contacting friend API: {exc}")
+        if exc.response is not None:
+            status_code = exc.response.status_code
+            try:
+                error_detail = exc.response.json()
+                raise HTTPException(status_code=status_code, detail=error_detail)
+            except ValueError:
+                raise HTTPException(status_code=status_code, detail=str(exc))
+        raise HTTPException(status_code=500, detail=str(exc))

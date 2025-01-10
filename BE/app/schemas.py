@@ -32,8 +32,6 @@ class ReservationResponse(BaseModel):
     class Config:
         from_attributes = True
 
-from pydantic import BaseModel
-
 class MediMatch(BaseModel):
     drug_name: str
     top_n: int
