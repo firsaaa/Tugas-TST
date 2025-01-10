@@ -365,6 +365,11 @@ async def get_my_reservations(user_id: str):
 MEDIMATCH_API_KEY = os.getenv("MEDIMATCH_API_KEY")
 MEDIMATCH_URL = "https://backend.medimatch.web.id/recommend"
 
+@router.get("/api-key", summary="Get MediMatch API Key")
+def get_api_key(key: str = Depends(api_key_auth)):
+    return {"api_key": os.getenv("MEDIMATCH_API_KEY")}
+
+
 @router.post("/recommend-drugs", summary="Recommend Drugs from Friend's API")
 async def recommend_drugs(
     request: Request,
