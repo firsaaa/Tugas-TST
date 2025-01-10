@@ -376,37 +376,20 @@ async def recommend_drugs(
     drug_name: str = Body(..., embed=True, description="Name of the drug to find alternatives for"),
     top_n: int = Body(5, embed=True, description="Number of recommendations to retrieve")
 ):
-    # Get the API key from headers using the correct header name
     api_key = request.headers.get("api-key")
     if not api_key:
         raise HTTPException(status_code=403, detail="Missing API key")
     
-    # Verify our API key
     if api_key != MEDIMATCH_API_KEY:
         raise HTTPException(status_code=403, detail="Invalid API Key")
     
-    payload = {
-        "drug_name": drug_name,
-        "top_n": top_n
-    }
-    
-    # Use the correct header name for the MediMatch API
-    headers = {
-        "api-key": api_key,
-        "Content-Type": "application/json"
-    }
+    payload = {"drug_name": drug_name, "top_n": top_n}
+    headers = {"api-key": api_key, "Content-Type": "application/json"}
     
     try:
         response = requests.post(MEDIMATCH_URL, json=payload, headers=headers)
-
         response.raise_for_status()
         return response.json()
     except requests.RequestException as exc:
-        if exc.response is not None:
-            status_code = exc.response.status_code
-            try:
-                error_detail = exc.response.json()
-                raise HTTPException(status_code=status_code, detail=error_detail)
-            except ValueError:
-                raise HTTPException(status_code=status_code, detail=str(exc))
-        raise HTTPException(status_code=500, detail=str(exc))
+        raise HTTPException(status_code=500, detail=f"Error contacting MediMatch API: {exc}")
+
