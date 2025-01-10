@@ -71,6 +71,13 @@ def create_refresh_token(user_id: str) -> str:
     refresh_token_store[token] = user_id
     return token
 
+def validate_token(token: str) -> bool:
+    try:
+        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return True
+    except JWTError:
+        return False
+
 # Refresh Token
 refresh_token_store = {}
 
