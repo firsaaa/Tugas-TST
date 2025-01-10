@@ -363,30 +363,45 @@
         // Medicine recommendation functionality
         document.getElementById('medicineForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const drugName = document.getElementById('drugName').value;
+            const topN = document.getElementById('topN').value;
             const token = localStorage.getItem('token');
+
             if (!token) {
                 showNotification('Please login first', 'error');
                 return;
             }
 
-            const drugName = document.getElementById('drugName').value;
-            const topN = document.getElementById('topN').value;
-
             try {
+                // Fetch the MediMatch API key securely
+                const apiKeyResponse = await fetch('https://coworkingspace.up.railway.app/api/secure/api-key', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!apiKeyResponse.ok) {
+                    const error = await apiKeyResponse.json();
+                    throw new Error(error.detail || 'Failed to fetch API key');
+                }
+
+                const { api_key } = await apiKeyResponse.json();
+
+                // Use the API key to make the recommendation request
                 const response = await fetch('https://coworkingspace.up.railway.app/api/secure/recommend-drugs', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'api-key': api_key
                     },
-                    body: JSON.stringify({
-                        drug_name: drugName,
-                        top_n: parseInt(topN)
-                    })
+                    body: JSON.stringify({ drug_name: drugName, top_n: parseInt(topN) })
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to get recommendations');
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to fetch recommendations');
                 }
 
                 const result = await response.json();
@@ -399,7 +414,8 @@
                 }
 
                 // Iterate over the name and composition of the medicines
-                for (const [key, value] of Object.entries(result.data.name)) {
+                Object.keys(result.data.name).forEach(key => {
+                    const value = result.data.name[key];
                     const composition = result.data.combined_composition[key];
                     const card = document.createElement('div');
                     card.className = 'medicine-card';
@@ -409,14 +425,22 @@
                         <p>Drug ID: ${key}</p>
                     `;
                     resultsContainer.appendChild(card);
-                }
+                });
 
                 showNotification('Recommendations found successfully', 'success');
             } catch (error) {
                 console.error('Error:', error);
-                showNotification('Error getting recommendations', 'error');
+                showNotification('No Recommendation found', 'error');
             }
         });
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            setTimeout(() => notification.style.display = 'none', 4000);
+        }
 
 
 // Check authentication
