@@ -1,7 +1,7 @@
 # 🖥️ PICA'S COWORKING SPACE
 
 <p align="center">
-  Welcome to **Pica's Coworking Space**!
+  **Welcome to Pica's Coworking Space**!
 </p>
 
 Pica's Coworking Space is a platform designed to enable users to book seats at coworking spaces easily. It features an integrated medicine recommendation system powered by MediMatch, enabling users to get suggestions for medicines to enhance their productivity while working.
