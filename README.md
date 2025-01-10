@@ -24,9 +24,9 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
 ---
 
 ## **LINKS**
-1. **Frontend**: picacoworkingspace.site
-2. **Backend**: api.picacoworkingspace.site
-3. **API DOCS**: api.picacoworkingspace.site/docs
+1. **Frontend**: https://www.picacoworkingspace.site
+2. **Backend**: https://www.api.picacoworkingspace.site
+3. **API DOCS**: https://www.api.picacoworkingspace.site/docs
 4. **Documents** : 
 
 
@@ -185,8 +185,8 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
 ## **Projects Utilizing This System**
 1. **Medimatch**:
    - Belongs to: 18222043 Ricky Wijaya
-   - Link: medimatch.web.id
+   - Link: https://www.medimatch.web.id
 2. **Izinsakit**:
    - Belongs to: 18222013 Aththariq Lisan
-   - Link: izinsakit.site
+   - Link: https://www.izinsakit.site
 
