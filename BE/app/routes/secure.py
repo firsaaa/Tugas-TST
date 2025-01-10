@@ -365,9 +365,18 @@ async def get_my_reservations(user_id: str):
 MEDIMATCH_API_KEY = os.getenv("MEDIMATCH_API_KEY")
 MEDIMATCH_URL = "https://backend.medimatch.web.id/recommend"
 
-@router.get("/api-key", summary="Get MediMatch API Key")
-def get_api_key(key: str = Depends(api_key_auth)):
-    return {"api_key": os.getenv("MEDIMATCH_API_KEY")}
+@router.get("/api-key", summary="Fetch MediMatch API Key")
+async def get_api_key(authorization: str = Header(..., description="Bearer token for authentication")):
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid Authorization header")
+    
+    token = authorization.split("Bearer ")[1]
+    # Validate token logic here (e.g., JWT decode)
+    if not validate_token(token):  # Assume validate_token is your validation function
+        raise HTTPException(status_code=403, detail="Invalid or expired token")
+
+    return {"api_key": MEDIMATCH_API_KEY}
+
 
 
 @router.post("/recommend-drugs", summary="Recommend Drugs from Friend's API")
