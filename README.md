@@ -20,14 +20,24 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
 2. **Reservations**: Book seats at coworking spaces for specific dates.  
 3. **Medicine Recommendations**: Integrated with MediMatch to suggest medicines tailored to user needs.  
 
+
+---
+
+## **LINKS**
+1. **Frontend**: picacoworkingspace.site
+2. **Backend**: api.picacoworkingspace.site
+3. **API DOCS**: api.picacoworkingspace.site/docs
+4. **Documents** : 
+
+
 ---
 
 ## **API Documentation**
 
 ### **Base URL**
-- `Frontend`: Deployed via Vercel [coworkingspace-frontend](https://coworkingspace-six.vercel.app/)  
-- `Backend`: Hosted on Railway [coworkingspace-backend](https://coworkingspace.up.railway.app/)  
-- Full Documentation: [coworkingspace-API Docs](https://coworkingspace.up.railway.app/docs)
+- `Frontend`: Deployed via Vercel   
+- `Backend`: Hosted on Railway 
+- Full Documentation: [API Docs](https://coworkingspace.up.railway.app/docs)
 
 ---
 
@@ -172,3 +182,11 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
    - Hosted on Supabase for secure and efficient storage solutions.
 
 ---
+## **Projects Utilizing This System**
+1. **Medimatch**:
+   - Belongs to: 18222043 Ricky Wijaya
+   - Link: medimatch.web.id
+2. **Izinsakit**:
+   - Belongs to: 18222013 Aththariq Lisan
+   - Link: izinsakit.site
+
