@@ -19,7 +19,7 @@ router = APIRouter()
 API_KEY = os.getenv("API_KEY")  # Ambil API Key dari .env
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback_secret_key")  # Secret Key untuk JWT
 ALGORITHM = "HS256"  # Algoritma yang digunakan untuk JWT
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Durasi token
+ACCESS_TOKEN_EXPIRE_DAYS = 9999999999999999999  # Durasi token
 
 # OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -43,7 +43,7 @@ def api_key_auth(x_api_key: str = Header(...)):
 # Token Creation
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
