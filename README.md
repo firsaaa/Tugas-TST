@@ -25,9 +25,9 @@ Pica's Coworking Space is a platform designed to enable users to book seats at c
 ## **API Documentation**
 
 ### **Base URL**
-- `Frontend`: Deployed via [Vercel](https://coworkingspace-six.vercel.app/)  
-- `Backend`: Hosted on [Railway](https://coworkingspace.up.railway.app/)  
-- Full Documentation: [API Docs](https://coworkingspace.up.railway.app/docs)
+- `Frontend`: Deployed via Vercel [coworkingspace-frontend](https://coworkingspace-six.vercel.app/)  
+- `Backend`: Hosted on Railway [coworkingspace-backend](https://coworkingspace.up.railway.app/)  
+- Full Documentation: [coworkingspace-API Docs](https://coworkingspace.up.railway.app/docs)
 
 ---
 
