@@ -23,7 +23,9 @@ app.add_middleware(
         "http://127.0.0.1:5500", 
         "https://coworkingspace-six.vercel.app",
         "https://coworkingspace-backend.vercel.app",
-        "https://coworkingspace.up.railway.app"  \
+        "https://coworkingspace.up.railway.app",
+        "https://www.api.picacoworkingspace.site",
+        "https://picacoworkingspace.site" \
     ],
     allow_credentials=True,
     allow_methods=["*"],
